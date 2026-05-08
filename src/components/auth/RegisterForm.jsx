@@ -61,7 +61,7 @@ const RegisterForm = () => {
   return (
     <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
       <div className="text-center">
-        <h2 className="text-3xl font-extrabold text-gray-900">LavadoTrack</h2>
+        <h2 className="text-3xl font-extrabold text-gray-900">DEYPA Lavado</h2>
         <p className="mt-2 text-sm text-gray-600">Crea una cuenta nueva</p>
       </div>
 

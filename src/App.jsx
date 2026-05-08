@@ -11,10 +11,7 @@ import { useOrdenes } from './hooks/useOrdenes';
 import { useClientes } from './hooks/useClientes';
 
 const WashIcon = () => (
-  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-      d="M3 7h18M3 7a2 2 0 00-2 2v9a2 2 0 002 2h18a2 2 0 002-2V9a2 2 0 00-2-2M3 7V5a2 2 0 012-2h14a2 2 0 012 2v2M12 12a3 3 0 100 6 3 3 0 000-6z" />
-  </svg>
+  <img src="/public/favicon.png" alt="Wash Icon" className="w-7 h-7" />
 );
 
 const NavLink = ({ to, children }) => {
@@ -51,7 +48,7 @@ function App() {
             </div>
             <div className="leading-tight">
               <span className="text-xl font-extrabold text-blue-600 group-hover:text-blue-700 transition-colors">
-                LavadoTrack
+                DEYPA Lavado
               </span>
               <span className="hidden sm:block text-xs text-gray-400 font-normal -mt-0.5">
                 Panel de gestión
@@ -172,7 +169,7 @@ function App() {
       </main>
 
       <footer className="text-center text-xs text-gray-300 py-4">
-        LavadoTrack © {new Date().getFullYear()}
+        DEYPA Lavado © {new Date().getFullYear()}
       </footer>
 
     </div>
