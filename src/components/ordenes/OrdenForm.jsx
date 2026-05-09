@@ -6,34 +6,22 @@ const PRECIOS = {
   "lavado+planchado": 220,
 };
 
-const OrdenForm = ({ hook, clientesHook }) => {
+const OrdenForm = ({ hook, clientesHook, onSuccess }) => {
   const { addOrden } = hook;
   const { clientes } = clientesHook;
 
   const [clienteNombre, setClienteNombre] = useState("");
-  const [clienteTelefono, setClienteTelefono] = useState("");
-  const [isManual, setIsManual] = useState(false);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
   const [servicio, setServicio] = useState("");
   const [error, setError] = useState("");
   const [exito, setExito] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleClienteSelect = (e) => {
-    const value = e.target.value;
-    if (value === "manual") {
-      setIsManual(true);
-      setClienteNombre("");
-      setClienteTelefono("");
-    } else {
-      setIsManual(false);
-      setClienteNombre(value);
-      const clienteSeleccionado = clientes.find((c) => c.nombre === value);
-      if (clienteSeleccionado) {
-        setClienteTelefono(clienteSeleccionado.telefono || "");
-      } else {
-        setClienteTelefono("");
-      }
-    }
+  const handleClienteChange = (e) => {
+    const nombre = e.target.value;
+    const cliente = clientes.find((c) => c.nombre === nombre);
+    setClienteSeleccionado(cliente || null);
+    setClienteNombre(nombre);
   };
 
   const handleSubmit = async (e) => {
@@ -45,13 +33,19 @@ const OrdenForm = ({ hook, clientesHook }) => {
     setLoading(true);
     setError("");
     try {
-      await addOrden({ cliente: clienteNombre, cliente_telefono: clienteTelefono, servicio });
+      await addOrden({
+        cliente: clienteNombre,
+        telefono: clienteSeleccionado?.telefono || "",
+        servicio,
+      });
       setClienteNombre("");
-      setClienteTelefono("");
-      setIsManual(false);
+      setClienteSeleccionado(null);
       setServicio("");
       setExito(true);
-      setTimeout(() => setExito(false), 3000);
+      setTimeout(() => {
+        setExito(false);
+        if (onSuccess) onSuccess();
+      }, 1500);
     } catch (err) {
       setError("Error al crear la orden");
     } finally {
@@ -93,46 +87,39 @@ const OrdenForm = ({ hook, clientesHook }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
-          {clientes.length > 0 && !isManual ? (
-            <select
-              value={clienteNombre}
-              onChange={handleClienteSelect}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-            >
-              <option value="">Selecciona un cliente</option>
-              {clientes.map((c) => (
-                <option key={c.id} value={c.nombre}>
-                  {c.nombre} — {c.telefono}
-                </option>
-              ))}
-              <option value="manual">+ Ingresar manualmente</option>
-            </select>
-          ) : (
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Nombre del cliente"
+          {clientes.length > 0 ? (
+            <>
+              <select
                 value={clienteNombre}
-                onChange={(e) => setClienteNombre(e.target.value)}
+                onChange={handleClienteChange}
                 className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-              />
-              <input
-                type="tel"
-                placeholder="Teléfono del cliente (Opcional)"
-                value={clienteTelefono}
-                onChange={(e) => setClienteTelefono(e.target.value)}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-              />
-              {clientes.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setIsManual(false)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Volver a seleccionar cliente
-                </button>
+              >
+                <option value="">Selecciona un cliente</option>
+                {clientes.map((c) => (
+                  <option key={c.id} value={c.nombre}>
+                    {c.nombre} — {c.telefono}
+                  </option>
+                ))}
+              </select>
+              {/* Muestra el teléfono del cliente seleccionado */}
+              {clienteSeleccionado?.telefono && (
+                <p className="mt-1.5 text-xs text-gray-400 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  {clienteSeleccionado.telefono}
+                </p>
               )}
-            </div>
+            </>
+          ) : (
+            <input
+              type="text"
+              placeholder="Nombre del cliente"
+              value={clienteNombre}
+              onChange={(e) => setClienteNombre(e.target.value)}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+            />
           )}
         </div>
 

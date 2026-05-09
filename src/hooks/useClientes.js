@@ -6,6 +6,7 @@ export const useClientes = () => {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -17,11 +18,26 @@ export const useClientes = () => {
 
     const fetchClientes = async () => {
       setLoading(true);
-      const { data, error: fetchError } = await supabase
+
+      // Verificar si es admin
+      const { data: perfil } = await supabase
+        .from("perfiles")
+        .select("is_admin")
+        .eq("id", currentUser.id)
+        .single();
+
+      const admin = perfil?.is_admin || false;
+      setIsAdmin(admin);
+
+      // Si es admin trae todos, si no solo los suyos
+      const query = supabase
         .from("clientes")
         .select("*")
-        .eq("user_id", currentUser.id)
         .order("created_at", { ascending: false });
+
+      if (!admin) query.eq("user_id", currentUser.id);
+
+      const { data, error: fetchError } = await query;
 
       if (fetchError) {
         setError("Error al cargar los clientes.");
@@ -43,7 +59,6 @@ export const useClientes = () => {
       .select()
       .single();
     if (insertError) throw insertError;
-    // Actualiza el estado local directamente
     const nuevo = { ...data, createdAt: data.created_at };
     setClientes((prev) => [nuevo, ...prev]);
     return data;
@@ -55,7 +70,6 @@ export const useClientes = () => {
       .update(updatedData)
       .eq("id", id);
     if (updateError) throw updateError;
-    // Actualiza el estado local directamente
     setClientes((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updatedData } : c))
     );
@@ -67,9 +81,8 @@ export const useClientes = () => {
       .delete()
       .eq("id", id);
     if (deleteError) throw deleteError;
-    // Actualiza el estado local directamente
     setClientes((prev) => prev.filter((c) => c.id !== id));
   };
 
-  return { clientes, loading, error, addCliente, updateCliente, deleteCliente };
+  return { clientes, loading, error, isAdmin, addCliente, updateCliente, deleteCliente };
 };
