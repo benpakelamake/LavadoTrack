@@ -1,3 +1,4 @@
+![img1](img/Imagen6.png)
 # Proyecto Final - LavadoTrack
 
 ### **Integrantes:**
