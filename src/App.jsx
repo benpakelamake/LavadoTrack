@@ -11,7 +11,7 @@ import { useOrdenes } from './hooks/useOrdenes';
 import { useClientes } from './hooks/useClientes';
 
 const WashIcon = () => (
-  <img src="/public/favicon.png" alt="Wash Icon" className="w-7 h-7" />
+  <img src="favicon.png" alt="Wash Icon" className="w-7 h-7" />
 );
 
 const NavLink = ({ to, children }) => {
