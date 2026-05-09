@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useOrdenes } from "@/hooks/useOrdenes";
-import { useClientes } from "@/hooks/useClientes";
 
 const PRECIOS = {
   lavado: 150,
@@ -8,9 +6,9 @@ const PRECIOS = {
   "lavado+planchado": 220,
 };
 
-const OrdenForm = () => {
-  const { addOrden } = useOrdenes();
-  const { clientes } = useClientes();
+const OrdenForm = ({ hook, clientesHook }) => {
+  const { addOrden } = hook;
+  const { clientes } = clientesHook;
 
   const [clienteNombre, setClienteNombre] = useState("");
   const [servicio, setServicio] = useState("");
@@ -71,11 +69,8 @@ const OrdenForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
 
-        {/* CLIENTE — selector si hay clientes, input si no */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Cliente
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
           {clientes.length > 0 ? (
             <select
               value={clienteNombre}
@@ -100,11 +95,8 @@ const OrdenForm = () => {
           )}
         </div>
 
-        {/* SERVICIO */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Servicio
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Servicio</label>
           <div className="grid grid-cols-3 gap-2">
             {Object.entries(PRECIOS).map(([key, precio]) => {
               const labels = {
